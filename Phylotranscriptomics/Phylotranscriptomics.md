@@ -24,6 +24,11 @@ Place all pep sequences into a single folder named "Proteomes". Run [OrthoFinder
 ```
 orthofinder -M msa -A mafft -T fasttree -t [threads] -a [threads] -f proteomes/
 ```
+Note that OrthoFinder continously failed due to the large number of transcriptomes being analyzed even with 1Tb of RAM. We instead ran Diamond Blasts independently after the commands were generated using: 
+```
+orthofinder -f proteomes/ -op
+```
+We then ran 
 
 ## 3. Filter Orthologs 
 ```
