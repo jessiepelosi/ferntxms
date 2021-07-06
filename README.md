@@ -15,7 +15,7 @@ This repository is split into the following folders:
  
  3) Repeats
  
- 4) Whole Genome Duplications 
+ 4) Whole Genome Dups 
   
  5) Data </b>
 
