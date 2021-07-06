@@ -2,13 +2,13 @@
 
 ## Repeat Annotation
 
-Repeats were identified and annotated in each transcriptome using RepeatMasker ver. 4.0.5 (Smit et al. 2015) with the viridiplantae repeat database. 
+Repeats were identified and annotated in each transcriptome using [RepeatMasker ver. 4.0.5](https://www.repeatmasker.org/) (Smit et al. 2015) with the viridiplantae repeat database. 
 ```
 RepeatMasker Transcriptome.fasta -pa 6 -species viridiplantae 
 ```
 ## Extract Repeat Sequences
 
-The output from RepeatMasker was parsed with the perl pipeline One Code to Find Them All (Bailly-Bechet et al. 2014)
+The output from RepeatMasker was parsed with the perl pipeline [One Code to Find Them All](http://doua.prabi.fr/software/one-code-to-find-them-all) (Bailly-Bechet et al. 2014)
 ```
 perl buld_dictionary.pl --rm RepeatMasker.out > Txm.LTR
 perl one_code_to_find_them_all.pl --rm RepeatMasker.out --ltr Txm.LTR --fasta Txm.fa 
