@@ -4,7 +4,7 @@ Code and data for the paper: "Phylotranscriptomics illuminates gene family evolu
 
 Code Written By: Jessie Pelosi and Emily Kim 
 
-Last Updated: July 6, 2021 
+Last Updated: July 8, 2021 
 
 This repository is split into the following folders: 
 <b>
@@ -15,9 +15,11 @@ This repository is split into the following folders:
  
  3) Repeats
  
- 4) Whole Genome Dups 
-  
- 5) Data </b>
+ 4) Whole Genome Dups
+ 
+ 5) Data 
+
+</b>
 
 
 Each folder contains a markdown file for analyses and any relevant scripts/files for those analyses. 
