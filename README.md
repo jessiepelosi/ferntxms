@@ -1,6 +1,6 @@
 # Fern Transcriptomes 
 
-Code and data for the paper: "Phylotranscriptomics illuminates gene family evolution and transposable element landscape across ferns" by Jessie A. Pelosi, Emily Kim, Emily B. Sessa, and W. Brad Barbazuk 
+Code and data for the paper: "Phylotranscriptomics illuminates genome duplications, gene family evolution, and transposable element landscape across ferns" by Jessie A. Pelosi, Emily Kim, Emily B. Sessa, and W. Brad Barbazuk 
 
 Code Written By: Jessie Pelosi and Emily Kim 
 
