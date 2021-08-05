@@ -16,10 +16,9 @@ Compute Ks distributions. This will output a .tsv file and a .svg file. You can 
 ```
 wgd ksd sample.fa.blast.tsv.mcl sample.fa
 ```
-Fit mixture models to the distribution and assess best fit model with BIC from GMM. 
-```
-wgd mix sample.fa.ks.tsv --method gmm
-```
+We then used the R package [mixtools ver. 1.2.0](https://cran.r-project.org/web/packages/mixtools/mixtools.pdf) (Benaglia et al. 2009) to fit mixture models to the Ks distributions. The code for this can be found in this directory under "ks_plots.R". 
+
+
 ## Phylogenomic Approaches 
 
 ## References 
