@@ -1,6 +1,7 @@
 # Fern Transcriptomes 
 
 Code and data for the papers:
+
 "Phylotranscriptomics illuminates genome duplications and gene retention in ferns " by Jessie A. Pelosi, Emily H. Kim, W. Brad Barbazuk, and Emily B. Sessa
 
 "Repeat and gene family evolution in ferns illuminated by phylotranscriptomics" by Jessie A. Pelosi, Emily H. Kim, Emily B. Sessa, and W. Brad Barbazuk 
