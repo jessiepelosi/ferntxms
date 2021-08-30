@@ -62,13 +62,18 @@ python extract_cds.py input_file trancriptome_1 transcriptome_2 ... transciptome
 This script will only work if the headers in the orthogroup fasta file (and by extension the proteome files) and the transcriptome (CDS) files. Run as loop or array on SLURM. 
 
 
-## 5. Sequence Alignment 
+## 5. Sequence Alignment + Trimming 
 
 The codon-aware alignment program [MACSE ver. 2.04](https://bioweb.supagro.inra.fr/macse/) (Ranwez et al. 2011) was used to align the extracted CDS sequences for each orthogroup. Run as loop or array on SLURM. 
 ```
 for file in *.fa; do java -Xms4000m -jar macse_v2.04.jar -prog alignSequences -seq "$file"; done
 ```
 
+Since we are using so many transcriptomes over deep time the raw alignments from MACSE are a bit dirty. We need to clean these up by removing gappy sites - those that contain less than 50% of the transcriptomes. We can do this with [TrimAl ver. 1.2](http://trimal.cgenomics.org/) (Capella-Gutierrez et al. 2009). 
+
+```
+trimal -in OGXXXX_NT.fa -out OGXXX_NT.trim50.fa -gt 0.5
+```
 The output files from this program are aligned CDS and peptide files. We will use both for gene tree construction (next step). 
 
 ## 5. Gene Tree Construction 
@@ -76,14 +81,28 @@ The output files from this program are aligned CDS and peptide files. We will us
 Gene trees were constructed under a maximum likelihood framework with [IQTREE2 ver. 2.1.2](http://www.iqtree.org/) (Minh et al. 2020) with ModelFinder (Kalyaanamoorthy et al. 2017) and 1000 ultrafast bootstraps (Hoang et al. 2018). Given the results of Shen et al. (2020) we ran IQTREE2 with two threads for all jobs. Run as loop or array.    
 
 ```
-iqtree2 -s OGXXXX.NT -m TEST --alrt 1000 -B 1000 -T 2 --redo
+iqtree2 -s OGXXX_NT.trim50.fa -m TEST --alrt 1000 -B 1000 -T 2 --redo
 ```
 Run with both peptide and CDS alignments from MACSE. 
 
 ## 6. Generate Species Tree 
 
+Prior to running ASTRAL, we must change names of the tips used in the phylogeny so that each transcriptome is only represented once, not per scaffold. 
+
+```
+cat *.treefile > MC_loci.txt # Create a single file with every gene tree for the multi-copy dataset
+cat *.treefile > SC_loci.txt # Create a single file with every gene tree for the single-copy dataset 
+bash rename_trees.sh # Rename the scaffolds to represent their corresponding transcriptome 
+```
+Then, we can run ASTRAL. 
+
 ```
 ASTRAL Pro and ASTRAL 
+```
+
+We can also compare the multi-species coalescent tree from ASTRAL to a concatenated analysis with the single-copy orthogroup dataset. Orthogroup alignements can be concatenated in Geneious, a partition file created, and run under maximum likelihood with IQTREE 2 as above. 
+```
+Concat IQTREE2 commands 
 ```
 
 ## 7. Divergence Time Estimation 
