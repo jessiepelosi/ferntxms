@@ -74,6 +74,16 @@ Since we are using so many transcriptomes over deep time the raw alignments from
 ```
 trimal -in OGXXXX_NT.fa -out OGXXX_NT.trim50.fa -gt 0.5
 ```
+
+In some cases, trimming led to problems where some sequences were composed entirely of gaps. We learned of this issue by running into the log error messages in IQTREE. This can be done in the following way with [qiime ver. 1.9.1](http://qiime.org/) (Caporaso et al. 2010). 
+
+```
+for file in $(cat for_IQTREE.txt); do
+         grep "WARNING" "$file".log | sed -r 's/WARNING\:\sSequence\s([A-Za-z0-9\_\.\-]*).*/\1/g' > "$file"_seq-to-remove.txt
+         filter_fasta.py -f "$file" -o "$file".seqsremoved.fasta -s "$file"_seq-to-remove.txt -n
+done
+```
+
 The output files from this program are aligned CDS and peptide files. We will use both for gene tree construction (next step). 
 
 ## 5. Gene Tree Construction 
