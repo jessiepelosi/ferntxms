@@ -41,7 +41,7 @@ We then used the GOGetter Pipeline (E.B. Sessa, M.S. Barker et al., unpub.) to B
 perl 0_Get_GO_annotations.pl taxon_list.txt 
 ```
 
-The proption of GO terms in each GO category (as defined by Araport) was visualized in R (see `GOterm_heatmap.R`). 
+The proption of GO terms in each GO category (as defined by Araport) was visualized in R (see `gene_retention.R`). 
 
 
 ## References 
