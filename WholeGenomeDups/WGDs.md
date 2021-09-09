@@ -38,8 +38,10 @@ python extract_cds.py sample_paralog.list.tsv sample.fa.cds
 We then used the GOGetter Pipeline (E.B. Sessa, M.S. Barker et al., unpub.) to BLAST each transcriptome and corresponding paralogs to the Araport11 <i>Arabidopsis thaliana </i> protein dataset (Berardini et al. 2004). 
 
 ```
-
+perl 0_Get_GO_annotations.pl taxon_list.txt 
 ```
+
+
 
 ## References 
 
