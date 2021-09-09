@@ -32,6 +32,12 @@ for file in *.tsv; do sed -r 's/^[0-9]*\s//g' "$file" | sed 's/\_\_/\n/g' | sed 
 We then extracted the corresponding CDS sequences with `extract_cds.py`. 
 
 ```
+python extract_cds.py sample_paralog.list.tsv sample.fa.cds 
+```
+
+We then used the GOGetter Pipeline (E.B. Sessa, M.S. Barker et al., unpub.) to BLAST each transcriptome and corresponding paralogs to the Araport11 <i>Arabidopsis thaliana </i> protein dataset (Berardini et al. 2004). 
+
+```
 
 ```
 
