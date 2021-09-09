@@ -16,14 +16,14 @@ Compute Ks distributions. This will output a .tsv file and a .svg file. You can 
 ```
 wgd ksd sample.fa.blast.tsv.mcl sample.fa
 ```
-We then used the R package [mixtools ver. 1.2.0](https://cran.r-project.org/web/packages/mixtools/mixtools.pdf) (Benaglia et al. 2009) to fit mixture models to the Ks distributions. The code for this can be found in this directory under `"ks_plots.R"`. 
+We then used the R package [mixtools ver. 1.2.0](https://cran.r-project.org/web/packages/mixtools/mixtools.pdf) (Benaglia et al. 2009) to fit mixture models to the Ks distributions. The code for this can be found in this directory under `ks_plots.R`. 
 
 
 ## Phylogenomic Approaches 
 
 ## Biased Gene Retention 
 
-To examine how and if genes were differentially retained after WGDs, we created lists of duplicates that were +/- 1SD from the mean putative WGD peak(s) in each transcriptome (see `"ks_plots.R"`). The output files were then further edited to get a list of paralogs that could then be used to extract the corresponding CDS from each transcriptome for further analyses. 
+To examine how and if genes were differentially retained after WGDs, we created lists of duplicates that were +/- 1SD from the mean putative WGD peak(s) in each transcriptome (see `ks_plots.R`). The output files were then further edited to get a list of paralogs that could then be used to extract the corresponding CDS from each transcriptome for further analyses. 
 
 ```
 for file in *.tsv; do sed -r 's/^[0-9]*\s//g' "$file" | sed 's/\_\_/\n/g' | sed -r 's/^([A-Za-z])/>\1/g' > "$file"_paralog.list.tsv;done
@@ -41,6 +41,7 @@ We then used the GOGetter Pipeline (E.B. Sessa, M.S. Barker et al., unpub.) to B
 perl 0_Get_GO_annotations.pl taxon_list.txt 
 ```
 
+The proption of GO terms in each GO category (as defined by Araport) was visualized in R (see `GOterm_heatmap.R`). 
 
 
 ## References 
