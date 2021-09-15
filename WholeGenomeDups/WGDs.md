@@ -39,6 +39,13 @@ We then used the GOGetter Pipeline (E.B. Sessa, M.S. Barker et al., unpub.) to B
 
 ```
 perl 0_Get_GO_annotations.pl taxon_list.txt 
+
+for file in $(cat taxon_list.txt); do perl 1_maketable_raw_JAP.pl "$file";done
+
+for file in $(cat taxon_list.txt); do perl 2_maketable_freq_JAP.pl "$file";done
+
+for file in $(cat taxon_list.txt); do sed 's/, RNA binding/ RNA binding/g' "$file" | sed 's/, epigenetic/ epigenetic/g' | cut -d, -f2 > frequencytable_"$file".csv;done 
+
 ```
 
 The proption of GO terms in each GO category (as defined by Araport) was visualized in R (see `gene_retention.R`). 
