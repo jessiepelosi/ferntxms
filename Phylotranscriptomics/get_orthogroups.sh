@@ -1,13 +1,15 @@
-#!/bin/bash
 
+#####################################
+# get_orthogroups.sh
 # Purpose: to create a file that contains the names of the OGs that contain X number of taxa that are single copy (-s Y)
 # or multicopy
 # bash get_OGs.sh -l [list_of_taxon_identifiers.txt] -f [OG.fasta] -s [Y/N] -p [0 to 1] 
 #
 # Jessie Pelosi
 # Last modified August 2, 2021
-#
+#####################################
 
+#!/bin/bash
 while getopts l:f:s:p: flag
 do
     case "${flag}" in
