@@ -41,7 +41,7 @@ We used the custom bash script <i>get_orthogroups.sh </i>to filter for single- a
 bash get_orthogroups.sh -l [list_of_taxon_identifiers.txt] -f [OG.fasta] -s [Y/N] -p [0 to 1]
 ```
 
-We first created a set of single-copy orthogroups for which at least 80% of the taxa were present. In the `OrthogroupSequences` directory of the OrthoFinder results, we ran:
+We created datasets where 60% (SCO60), 75% (SCO75), and 85% (SCO85) of the taxa were present and single copy. In the `OrthogroupSequences` directory of the OrthoFinder results, we ran:
 ```
 for file in *.fa; do bash -l unqiue_IDs.txt -f "$file" -s Y -p 0.8;done
 ```
@@ -64,6 +64,16 @@ This script will only work if the headers in the orthogroup fasta file (and by e
 
 ## 5. Sequence Alignment + Trimming 
 
+Prior to aligning sequences for the SCO datasets, we ran `rename_headers.sh`. 
+```
+bash rename_headers.sh -e cds
+```
+This script renames the headers of the CDS files to reflect just the taxon name, not individual contigs or scaffolds. As there were always some taxa that contained multiple copies in these mostly single copy datasets, we used [SeqKit ver. 0.10.2](https://bioinf.shenwei.me/seqkit/) (Shen et al. 2016) to remove these duplicates. 
+```
+for file in *.cds; do 
+	seqkit rmdup -n -i "$file" -o "$file"_nodup.fasta
+done
+```
 The codon-aware alignment program [MACSE ver. 2.04](https://bioweb.supagro.inra.fr/macse/) (Ranwez et al. 2011) was used to align the extracted CDS sequences for each orthogroup. Run as loop or array on SLURM. 
 ```
 for file in *.fa; do java -Xms4000m -jar macse_v2.04.jar -prog alignSequences -seq "$file"; done
