@@ -35,7 +35,7 @@ orthofinder -a 30 -b proteomes/OrthoFinder/Results_XXX/WorkingDirectory/
 
 ## 3. Filter Orthologs 
 
-We used the custom bash script <i>get_orthogroups.sh </i>to filter for single- and multi-copy orthogroups which contained a certain proportion of the input taxa. The input for this script is a list of unique identifiers (denoted by the `-l` flag), the orthogroup fasta file (denoted by the `-f` flag), whether you want single- or multi-copy orthogroups (either `Y` or `N` for the `-s` flag), and the proption of taxa you wish to filter for (0 to 1, denoted by `-p` flag). 
+We used the custom bash script `get_orthogroups.sh` to filter for single- and multi-copy orthogroups which contained a certain proportion of the input taxa. The input for this script is a list of unique identifiers (denoted by the `-l` flag), the orthogroup fasta file (denoted by the `-f` flag), whether you want single- or multi-copy orthogroups (either `Y` or `N` for the `-s` flag), and the proption of taxa you wish to filter for (0 to 1, denoted by `-p` flag). 
 
 ```
 bash get_orthogroups.sh -l [list_of_taxon_identifiers.txt] -f [OG.fasta] -s [Y/N] -p [0 to 1]
@@ -53,14 +53,13 @@ for file in *.fa; do bash -l unique_IDs.txt -f "$file" -s N -p 1;done
 
 ## 4. Extract Corresponding coding sequences 
 
-Since OrthoFinder takes peptide sequences as input, we had to extract the corresponding coding sequences (CDS) for each orthogroup, which we then aligned in Step 5. We used the custom python script <i>extract_CDS.py</i> (modified from Kasey K. Pham). The input_file is the name of the FASTA file to be converted, in this case this is the orthogroup fasta from OrthoFinder. The transcriptome files are the CDS files that are output from trinnotate (for example). 
+Since OrthoFinder takes peptide sequences as input, we had to extract the corresponding coding sequences (CDS) for each orthogroup, which we then aligned in Step 5. We used the custom python script `extract_CDS.py` (modified from Kasey K. Pham). The input_file is the name of the FASTA file to be converted, in this case this is the orthogroup fasta from OrthoFinder. The transcriptome files are the CDS files that are output from trinnotate (for example). 
 
 ```
 python extract_cds.py input_file trancriptome_1 transcriptome_2 ... transciptome_n
 ```
 
 This script will only work if the headers in the orthogroup fasta file (and by extension the proteome files) and the transcriptome (CDS) files. Run as loop or array on SLURM. 
-
 
 ## 5. Sequence Alignment + Trimming 
 
@@ -74,7 +73,7 @@ for file in *.cds; do
 	seqkit rmdup -n -i "$file" -o "$file"_nodup.fasta
 done
 ```
-The codon-aware alignment program [MACSE ver. 2.04](https://bioweb.supagro.inra.fr/macse/) (Ranwez et al. 2011) was used to align the extracted CDS sequences for each orthogroup. Run as loop or array on SLURM. 
+The codon-aware alignment program [MACSE ver. 2.04](https://bioweb.supagro.inra.fr/macse/) (Ranwez et al. 2011) was used to align the extracted CDS sequences for each orthogroup. Run as loop or array on SLURM. Some alignments required additional memory, up to 20Gb. 
 ```
 for file in *.fa; do java -Xms4000m -jar macse_v2.04.jar -prog alignSequences -seq "$file"; done
 ```
@@ -120,40 +119,57 @@ Then, we can run ASTRAL.
 ASTRAL Pro and ASTRAL 
 ```
 
-We can also compare the multi-species coalescent tree from ASTRAL to a concatenated analysis with the single-copy orthogroup dataset. Orthogroup alignements can be concatenated in Geneious, a partition file created, and run under maximum likelihood with IQTREE 2 as above. 
+We can also compare the multi-species coalescent tree from ASTRAL to a concatenated analysis with the single-copy orthogroup dataset. Orthogroup alignements can be concatenated in Geneious, a partition file created, and run under maximum likelihood with IQTREE2 as above. The partition files are provided in the Data folder. 
+
+For SCO85:
 ```
-Concat IQTREE2 commands 
+iqtree2 -s SCO85_FNA_Concat.fasta --alrt 1000 -B 1000 -p SCO85_FNA_partition.txt --redo -T 2 
+iqtree2 -s SCO85_FAA_Concat.fasta --alrt 1000 -B 1000 -p SCO85_FAA_partition.txt --redo -T 2 
+```
+
+For SCO75: 
+
+For SCO60 (Needed to run with additional CPUs, needed more RAM): 
+```
+iqtree2 -s SCO85_FNA_Concat.fasta --alrt 1000 -B 1000 -p SCO85_FNA_partition.txt --redo -T 10 
+iqtree2 -s SCO85_FAA_Concat.fasta --alrt 1000 -B 1000 -p SCO85_FAA_partition.txt --redo -T 10 
+```
+
+Discordance in the data was visualized with [DiscoVista](https://github.com/esayyari/DiscoVista) (Sayyari et al. 2018). Before running DiscoVista, change - to _ 
+```
+sed -i 's/\-/\_/g' [file]
+```
+We then need to root the species tree(s) with [newick utils ver. 1.6](https://github.com/tjunier/newick_utils) (Junier and Zdobnov 2010). 
+```
+nw_reroot [astral tree] Physcomitrella_patens > species_tree_estimated.tree
+```
+Generate the clade definitions file. I generated two separate files, one for the family-level classification and one for the order-level classification. 
+```
+python generate_clade-defs.py [annotation file] [outputfile] [Other clades file]
+```
+
+Run the discordance analysis on species trees. To use this with bootstraps from IQTREE, need to remove sh-aLRT values. 
+```
+./discoVista.py -m 0 -c clades-def.txt -p $path -t 95 -o $path/results
 ```
 
 ## 7. Divergence Time Estimation 
 
+We used [SortaDate](https://github.com/FePhyFoFum/SortaDate)(Smith et al. 2018) to generate a list of candidate loci for our divergence time estimation analyses. We used the SCO60 dataset as our input.  
+
 ```
-MARE + LBScore.py 
+# 1. Get root-to-tip variance 
+python SortaDate/src/get_var_length.py --flend .treefile --outf var_length.out --outg Physcomitrella_patens .
+
+# 2. Get bipartition support 
+python SortaDate/src/get_bp_genetrees.py --flend .treefile --outf bp_support.out . [species_tree.tre]
+
+# 3. Combine the results from these two runs
+python SortaDate/src/combine_results.py var_length.out bp_support.out --outf combined.out 
+
+# 4. Sort and get the list of the good genes
+python SoratDate/src/get_good_genes.py combined.out --max 3 --order 3,1,2 --outf good_genes.out 
+```
+```
 MCMCTREE
 ```
-
-## References 
-
-Emms, D.M., and S. Kelly. 2015. Solving fundamental biases in whole genome comparisons drastically improves orthogroup inference accuracy. Genome Biology 16: 157.  
-
-Emms, D.M, and S. Kelly. 2019. OrthoFinder: phylogenetic orthology inference for comparative genomics. Genome Biology 20: 238. 
-
-Guan R., Y. Zhao, H. Zhang, G. Fan, X. Liu; W. Zhou; C. Shi, J. Wang, W. Liu, X. Liang, Y. Fum, K. Ma, L. Zhao, 
-F. Zhang, Z. Lu, S.M. Lee, X. Xu, J. Wang, H. Yang, C. Fu, S. Ge, W. Chen (2019) [Updated genome assembly of Ginkgo biloba.](http://gigadb.org/dataset/100613) GigaScience Database. 
-http://dx.doi.org/10.5524/100613
-
-Hoang, D.T., O. Chernomor, A. von Haeseler, B.Q. Minh, and L.S. Vinh. 2018. UFBoot2: Improving the ultrafast bootstrap approximation. Mol. Biol. Evol. 35: 518-522.
-
-Kalyaanamoorthy, S., B.Q. Minh, T.K.F. Wong, A. von Haeseler, and L.S. Jermiin. 2017. ModelFinder: Fast model selection for accurate phylogenetic estimates. Nat Methods 14: 587-589. 
-
-Meyer, B. and Misof, B  2010 MARE: MAtrix REduction - A tool to select optimized data subsets from supermatrices for phylogenetic inference.. Zentrum für molekulare Biodiversitätsforschung (zmb) amZFMK, Adenauerallee 160, 53113 Bonn, Germany. 
-
-Minh, B.Q., H.A. Schmidt, O. Chernomor, D. Schrempf, M.D. Woodhams, A. von Haeseler, R. Lanfear (2020) IQ-TREE 2: New models and efficient methods for phylogenetic inference in the genomic era. Mol. Biol. Evol., 37:1530-1534
-
-Puttick, M.N. 2019. MCMCtreeR: functions to prepare MCMCtree analyses and visualize posterior ages on trees. Bioinformatics 35(24): 5321-5322. 
-
-Vincent Ranwez, Sébastien Harispe, Frédéric Delsuc, Emmanuel JP Douzery. MACSE: Multiple Alignment of Coding SEquences accounting for frameshifts and stop codons. PLoS One 2011, 6(9): e22594.
-
-Yang, Z. 2007. PAML 4: a program package for phylogenetic analysis by maximum likelihood. Molecular Biology and Evolution 24: 1586-1591. 
-
-Zhang, C., C. Scornavacca, E.K. Molloy, and S. Mirabab. 2020. ASTRAL-Pro: Quartet-based species-tree inference despite paralogy. Molecular Biology and Evolution msaa139. 
