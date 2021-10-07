@@ -111,12 +111,16 @@ Prior to running ASTRAL, we must change names of the tips used in the phylogeny 
 ```
 cat *.treefile > MC_loci.txt # Create a single file with every gene tree for the multi-copy dataset
 cat *.treefile > SC_loci.txt # Create a single file with every gene tree for the single-copy dataset 
-bash rename_trees.sh # Rename the scaffolds to represent their corresponding transcriptome 
+bash rename_headers.sh -e tre # Rename taxa to represent their corresponding transcriptome 
 ```
-Then, we can run ASTRAL. 
+Then, we can run ASTRAL, which uses the mutli-species coalenscent to generate species trees. [ASTRAL ver. 5.7.7](https://github.com/smirarab/ASTRAL) (Zhang et al. 2018) was used to infer species trees with the SCO datasets, and [ASTRAL-Pro ver. 1.1.3](https://github.com/chaoszhang/A-pro) (Zhang et al. 2020) was used to infer species trees for the MCO dataset.
 
 ```
-ASTRAL Pro and ASTRAL 
+#General ASTRAL command (using wrapper script provided by UFRC)
+astral -i [gene_tree.tre] -o [species_tree.tre]
+
+#General ASTRAL-Pro command 
+java -Djava.library.path=./lib -jar astral.1.1.3.jar -i [gene_trees.tre] -o [species_tree.tre] 
 ```
 
 We can also compare the multi-species coalescent tree from ASTRAL to a concatenated analysis with the single-copy orthogroup dataset. Orthogroup alignements can be concatenated in Geneious, a partition file created, and run under maximum likelihood with IQTREE2 as above. The partition files are provided in the Data folder. 
