@@ -78,6 +78,12 @@ The codon-aware alignment program [MACSE ver. 2.04](https://bioweb.supagro.inra.
 for file in *.fa; do java -Xms4000m -jar macse_v2.04.jar -prog alignSequences -seq "$file"; done
 ```
 
+There are some characters that MACSE introduces that we need to change before continuing. 
+```
+for file in *_NT.fasta; do sed -i 's/\!/\-/g' "$file";done
+for file in *_AA.fasta; do sed -i 's/\!/\-/g' "$file" | sed -i 's/\*/\-/g';done 
+```
+
 Since we are using so many transcriptomes over deep time the raw alignments from MACSE are a bit dirty. We need to clean these up by removing gappy sites - those that contain less than 50% of the transcriptomes. We can do this with [TrimAl ver. 1.2](http://trimal.cgenomics.org/) (Capella-Gutierrez et al. 2009). 
 
 ```
