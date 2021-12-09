@@ -180,6 +180,13 @@ python SortaDate/src/combine_results.py var_length.out bp_support.out --outf com
 # 4. Sort and get the list of the good genes
 python SoratDate/src/get_good_genes.py combined.out --max 3 --order 3,1,2 --outf good_genes.out 
 ```
+
+We first estimated divergence times with TreePL. Since the ML species tree topology differs from the ASTRAL topology and branch lengths must be in number of substitutions per site, we first generated a maximum likelihood tree with a constrained topology based on the SCO60 FNA ASTRAL topology with IQTREE2:  
 ```
-MCMCTREE
+iqtree2 -s 99Loci_Concat.fasta -m TEST -g 0_SpeciesTree.tre -B 1000 --alrt 1000 --prefix test.1 -p partitions.txt --redo -T 2
 ```
+We then rooted the tree as above and ran TreePL with 15 fossil callibrations. 
+```
+treePL treePL_15fossils.config
+```
+We compared the dates from the TreePL analysis to an MCMCTree run. The input for MCMCTree was prepared in [MCMCTreeR](https://github.com/PuttickMacroevolution/MCMCtreeR) (see script DivergenceTime.R). We followed the tutorial [here](http://abacus.gene.ucl.ac.uk/software/MCMCtreeStepByStepManual.pdf) to run MCMCTree. The input files for MCMCTree are availbale in this directory. 
