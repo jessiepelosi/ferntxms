@@ -8,16 +8,16 @@ Code Written By: Jessie Pelosi and Emily Kim
 
 Last Updated: February 1, 2022
 
-This repository is split into the following folders: 
+This repository is split into the following folders with corresponding markdowns: 
 <b>
   
- 1) Assembly and Annotation
+ 1) Assembly and Annotation ([Markdown](https://github.com/jessiepelosi/ferntxms/blob/main/AssemblyAnnotation/AssemblyAnnotation.md))
   
- 2) Phylotranscriptomics 
+ 2) Phylotranscriptomics ([Markdown](https://github.com/jessiepelosi/ferntxms/blob/main/Phylotranscriptomics/Phylotranscriptomics.md))
  
- 3) Repeats
+ 3) Repeats ([Markdown](https://github.com/jessiepelosi/ferntxms/blob/main/Repeats/Repeats.md)) 
  
- 4) Whole Genome Dups
+ 4) Whole Genome Dups ([Markdown](https://github.com/jessiepelosi/ferntxms/blob/main/WholeGenomeDups/WGDs.md)) 
  
  5) Data 
 
