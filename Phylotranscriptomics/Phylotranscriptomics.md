@@ -101,7 +101,7 @@ done
 
 The output files from this program are aligned CDS and peptide files. We will use both for gene tree construction (next step). 
 
-## 5. Gene Tree Construction 
+## 6. Gene Tree Construction 
 
 Gene trees were constructed under a maximum likelihood framework with [IQTREE2 ver. 2.1.2](http://www.iqtree.org/) (Minh et al. 2020) with ModelFinder (Kalyaanamoorthy et al. 2017) and 1000 ultrafast bootstraps (Hoang et al. 2018). Given the results of Shen et al. (2020) we ran IQTREE2 with two threads for all jobs. Run as loop or array.    
 
@@ -110,7 +110,7 @@ iqtree2 -s OGXXX_NT.trim50.fa -m TEST --alrt 1000 -B 1000 -T 2 --redo
 ```
 Run with both peptide and CDS alignments from MACSE. 
 
-## 6. Generate Species Tree 
+## 7. Generate Species Tree 
 
 Prior to running ASTRAL, we must change names of the tips used in the phylogeny so that each transcriptome is only represented once, not per scaffold. 
 
@@ -137,7 +137,12 @@ iqtree2 -s SCO85_FNA_Concat.fasta --alrt 1000 -B 1000 -p SCO85_FNA_partition.txt
 iqtree2 -s SCO85_FAA_Concat.fasta --alrt 1000 -B 1000 -p SCO85_FAA_partition.txt --redo -T 2 
 ```
 
-For SCO75: 
+For SCO75 (Needed to run SCO75 AA with additional CPUs, needed more RAM): 
+
+```
+iqtree2 -s SCO75_FNA_Concat.fasta --alrt 1000 -B 1000 -T 2 --redo -p SCO75_FNA_partition.txt
+iqtree2 -s SCO75_FAA_Concat.fasta --alrt 1000 -B 1000 -T 10 --redo -p SCO75_FAA_partition.txt
+```
 
 For SCO60 (Needed to run with additional CPUs, needed more RAM): 
 ```
@@ -163,7 +168,7 @@ Run the discordance analysis on species trees. To use this with bootstraps from 
 ./discoVista.py -m 0 -c clades-def.txt -p $path -t 95 -o $path/results
 ```
 
-## 7. Divergence Time Estimation 
+## 8. Divergence Time Estimation 
 
 We used [SortaDate](https://github.com/FePhyFoFum/SortaDate)(Smith et al. 2018) to generate a list of candidate loci for our divergence time estimation analyses. We used the SCO60 dataset as our input.  
 
