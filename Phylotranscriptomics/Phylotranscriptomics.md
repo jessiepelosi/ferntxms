@@ -194,4 +194,14 @@ We then rooted the tree as above and ran TreePL with 15 fossil callibrations.
 ```
 treePL treePL_15fossils.config
 ```
-We compared the dates from the TreePL analysis to an MCMCTree run. The input for MCMCTree was prepared in [MCMCTreeR](https://github.com/PuttickMacroevolution/MCMCtreeR) (see script DivergenceTime.R). We followed the tutorial [here](http://abacus.gene.ucl.ac.uk/software/MCMCtreeStepByStepManual.pdf) to run MCMCTree. The input files for MCMCTree are availbale in this directory. 
+We then incorporated phylogenetic uncertainty into the dating analysis following https://github.com/sunray1/treepl. 
+
+We first generated 100 ML BS replicate alignments from the 99 locus alignment. 
+```
+raxmlHPC-PTHREADS-SSE3 -f j -m GTRGAMMA -b $RANDOM -# 100 -s ../99Loci_Concat.fasta -q ../partitions_4.11.22.txt -n ferns.bs4treepl -T $SLURM_CPUS_PER_TASK
+```
+Then we generated trees from each alignment with a constrained topology. 
+```
+for b in {0..99}; do
+raxmlHPC-PTHREADS-SSE3 -f e -t ../0_SpeciesTree.tre -m GTRGAMMA -s ../99Loci_Concat.fasta.BS${b} -q ../partitions_4.11.22.txt.BS${b} -n tree_BS${b} -T $SLURM_CPUS_PER_TASK; done
+```
