@@ -205,3 +205,8 @@ Then we generated trees from each alignment with a constrained topology.
 for b in {0..99}; do
 raxmlHPC-PTHREADS-SSE3 -f e -t ../0_SpeciesTree.tre -m GTRGAMMA -s ../99Loci_Concat.fasta.BS${b} -q ../partitions_4.11.22.txt.BS${b} -n tree_BS${b} -T $SLURM_CPUS_PER_TASK; done
 ```
+Trees were then re-rooted using newick utils: 
+```
+for file in *.tre; do nw_reroot "$file" Physcomitrella_patens > "$file".reroot;done
+```
+And dated with TreePL using the same fifteen fossil callibrations. We used the python scripts provided in https://github.com/sunray1/treepl to perform the cross validation and dating analysis. Dated trees were used to annotate the species tree in treeAnnotator in BEAST. 
