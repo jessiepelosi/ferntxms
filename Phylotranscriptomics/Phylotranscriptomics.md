@@ -224,8 +224,11 @@ And dated with TreePL using the same fifteen fossil callibrations. We used the p
 In a supplemental analysis we downloaded sequence data from three additional taxa. In order to identify orthologs that we could use in generating a new tree, we used BLASTp with each proteome as the query and each orthogroup as the subject. 
 ```
 module load ncbi_blast
-for file in */*.fa; do blastp -db "$file" -query [txm_assembly].fa.transdecoder.pep -outfmt 6 -out "$file".[txm] -evalue 0.00001 -max_target_seqs 10;done 
+for file in */*.fa; do blastp -db "$file" -query [txm_assembly].fa.transdecoder.pep -outfmt 6 -out "$file".[txm] -evalue 0.00001 -max_target_seqs 10;done
+# Get best hit based on bit-score 
+for file in */*.fa.[txm]; do cat "$file" | sort -rnk 12 | head -n 1 | cut -d$'\t' -f1 > "$file".besthit;done
+for dir in */; do cd "$dir"; cat *.besthit > results.fasta; cd ../;done
 ```
 We then used `extract_cds.py` to get the corresponding coding sequence for each orthogroup and used `cat` to generate one file with the new coding sequences from the three additional taxa and the original taxa for each orthogroup. We then aligned and built a species tree as above. 
 
-The we dated the tree using XXX. 
+The we dated the tree using the same methods described above with treePL and python scripts provided in https://github.com/sunray1/treepl for bootstrapping our dating analysis. 
