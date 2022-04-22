@@ -110,6 +110,14 @@ iqtree2 -s OGXXX_NT.trim50.fa -m TEST --alrt 1000 -B 1000 -T 2 --redo
 ```
 Run with both peptide and CDS alignments from MACSE. 
 
+We also ran linked and unliked GHOST models [Crotty et al. 2020](https://academic.oup.com/sysbio/article/69/2/249/5541793) with k=2-6 for the SCO60 NT dataset using the best model identified in the original run: 
+```
+# Linked
+for i in {2..6}; do iqtree -s OGXXX_NT.trim50.fa --alrt 1000 -B 1000 -T 2 --redo -pre OGXXX_NT.trim50.fa.${i} -m [model]+H${i};done
+# Unlinked 
+for i in {2..6}; do iqtree -s OGXXX_NT.trim50.fa --alrt 1000 -B 1000 -T 2 --redo -pre OGXXX_NT.trim50.fa.${i} -m [model]*H${i};done
+```
+
 ## 7. Generate Species Tree 
 
 Prior to running ASTRAL, we must change names of the tips used in the phylogeny so that each transcriptome is only represented once, not per scaffold. 
@@ -210,3 +218,14 @@ Trees were then re-rooted using newick utils:
 for file in *.tre; do nw_reroot "$file" Physcomitrella_patens > "$file".reroot;done
 ```
 And dated with TreePL using the same fifteen fossil callibrations. We used the python scripts provided in https://github.com/sunray1/treepl to perform the cross validation and dating analysis. Dated trees were used to annotate the species tree in treeAnnotator in BEAST. 
+
+## Supplemental Analysis 
+
+In a supplemental analysis we downloaded sequence data from three additional taxa. In order to identify orthologs that we could use in generating a new tree, we used BLASTp with each proteome as the query and each orthogroup as the subject. 
+```
+module load ncbi_blast
+for file in */*.fa; do blastp -db "$file" -query [txm_assembly].fa.transdecoder.pep -outfmt 6 -out "$file".[txm] -evalue 0.00001 -max_target_seqs 10;done 
+```
+We then used `extract_cds.py` to get the corresponding coding sequence for each orthogroup and used `cat` to generate one file with the new coding sequences from the three additional taxa and the original taxa for each orthogroup. We then aligned and built a species tree as above. 
+
+The we dated the tree using XXX. 
