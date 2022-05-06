@@ -25,6 +25,23 @@ wgd mcl --cds --one_v_one -s sample1.fa,sample2.fa
 wgd ksd sample1.fa_sample2.fa.ovo.tsv sample1.fa sample2.fa 
 ```
 
+## Using Ksrates
+
+Use [ksrates](https://ksrates.readthedocs.io/en/latest/index.html) (Sensalari et al. 2022) to generate adjusted paralog and ortholog Ks plots. The full documentation is listed in the Read the Docs site (linked above) but this is an example. 
+```
+ksrates init txm.config
+ksrates paralogs-ks txm.config --n-threads 20
+ksrates orthologs-ks txm.config txm1 txm2 --n-threads 20
+ksrates orthologs-ks txm.config txm1 txm3 --n-threads 20 
+ksrates orthologs-ks txm.config txm2 txm3 --n-threads 20
+ksrates orthologs-analysis txm.config
+ksrates plot-orthologs txm.config
+ksrates orthologs-adjustment txm.config
+ksrates plot-paralogs txm.config
+ksrates plot-tree txm.config
+ksrates paralogs-analyses txm.config
+```
+
 ## Phylogenomic Approaches 
 
 Using subsets of transcriptomes based on our hypothesized events from Ks plots, we generated lists of orthogroups that contained at least one copy of each transcriptome of interest. 
