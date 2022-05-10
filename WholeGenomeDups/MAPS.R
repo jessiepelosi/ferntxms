@@ -1,7 +1,7 @@
 #########################
 ## MAPS.R
 ## Jessie Pelosi
-## Last Modified Feb 5 2022
+## Last Modified May 10 2022
 ##
 #########################
 
@@ -204,7 +204,7 @@ mean(death_df$value) # 0.001378472
 #### PSIL ####
 taxa <- c("Selaginella_moellendorffii", "Amborella_trichopoda", 
           "Tmesipteris_parva_ALVQ", "Equisetum_arvense_EQAR", "Ophioglossum_thermale_OPTH", 
-          "Psilotum_nudum_PSNU", "Tmesipteris_tannensis_TMTA")
+          "Psilotum_nudum_PSND", "Tmesipteris_tannensis_TMTA")
 taxa_to_keep <- data.frame(taxa, row.names = taxa)
 name_list <- name.check(time_tree, taxa_to_keep)
 checked_names <- name_list$tree_not_data
@@ -215,31 +215,31 @@ plot(trimmed_tree)
 write.tree(phy = trimmed_tree, file = "PSIL_trimmed_tree_toedit.tre")
 #Edit tree manually to convert to SIMMAP format 
 
-OrthoFinder <- read.delim("PSIL_run2_Orthogroups.GeneCount.tsv")
+OrthoFinder <- read.delim("PSIL_run3_Orthogroups.GeneCount.tsv")
 
 #Select only taxa of interest 
 for_WGDgc <- dplyr::select(OrthoFinder, 'Selaginella.moellendorffii',
                            'Amborella.trichopoda', 'Tmesipteris.parva.ALVQ',
-                           'Equisetum.arvense.EQAR', 'Ophioglossum.thermale.OPTH','Psilotum.nudum.PSNU',
+                           'Equisetum.arvense.EQAR', 'Ophioglossum.thermale.OPTH','Psilotum.nudum.PSND',
                            'Tmesipteris.tannensis.TMTA') %>% 
   filter(Selaginella.moellendorffii < 100 &
            Amborella.trichopoda < 100 & Tmesipteris.parva.ALVQ < 100 & 
            Equisetum.arvense.EQAR < 100 & Ophioglossum.thermale.OPTH < 100 &
-           Psilotum.nudum.PSNU < 100 & Tmesipteris.tannensis.TMTA < 100)  %>% 
+           Psilotum.nudum.PSND < 100 & Tmesipteris.tannensis.TMTA < 100)  %>% 
   filter(Selaginella.moellendorffii >= 1) %>% 
   filter(Amborella.trichopoda >= 1 | 
            Tmesipteris.parva.ALVQ >=1 | Equisetum.arvense.EQAR >=1 |
-           Ophioglossum.thermale.OPTH >=1 | Psilotum.nudum.PSNU >=1 | Tmesipteris.tannensis.TMTA >=1)
+           Ophioglossum.thermale.OPTH >=1 | Psilotum.nudum.PSND >=1 | Tmesipteris.tannensis.TMTA >=1)
 
 tmp <- for_WGDgc[rowSums(for_WGDgc[])>0,]
 
 df <- tmp %>% rowwise() %>% 
   mutate(average=mean(c(Selaginella.moellendorffii, Amborella.trichopoda, Tmesipteris.parva.ALVQ,
-                        Equisetum.arvense.EQAR, Ophioglossum.thermale.OPTH, Psilotum.nudum.PSNU, Tmesipteris.tannensis.TMTA))) 
+                        Equisetum.arvense.EQAR, Ophioglossum.thermale.OPTH, Psilotum.nudum.PSND, Tmesipteris.tannensis.TMTA))) 
 
 ggplot(data = df, mapping = aes(x = average)) + xlim(0, 3) + geom_density() + theme_classic()
 
-gm_mean(df$average) # 1.478997
+gm_mean(df$average) # 1.489378
 
 #Read in ultrametric species tree in Simmap format 
 tree <- phyext::read.simmap("PSIL_trimmed_tree_edited.tre", vers = 1.1)
@@ -249,20 +249,20 @@ birth = vector(mode = "list", length = 10)
 death = vector(mode = "list", length = 10)
 for (i in 1:10) {
   subset <- sample_n(tmp, 500)
-  MLE <- MLEGeneCount(tree, geneCountData = subset, geomMean =1.478997,
+  MLE <- MLEGeneCount(tree, geneCountData = subset, geomMean =1.489378,
                       conditioning = "oneInBothClades", fixedRetentionRates = T,startingQ = c(0.2, 0.2))
   birth[i] <- MLE$birthrate
   death[i] <- MLE$deathrate
 }
 
 birth_df <- melt(as.data.frame(birth))
-mean(birth_df$value) # RUN 1: 0.001299071, RUN 2: 0.001536341
+mean(birth_df$value) # 0.001559852
 death_df <- melt(as.data.frame(death))
-mean(death_df$value) # RUN 1: 0.001313255, RUN 2: 0.001437485
+mean(death_df$value) # 0.001570907
 
 #### MARA ####
 taxa <- c("Amborella_trichopoda", 
-          "Angiopteris_fokiensis_ANFK", "Equisetum_arvense_EQAR", "Psilotum_nudum_PSNU", 
+          "Angiopteris_fokiensis_ANFO", "Equisetum_arvense_EQAR", "Psilotum_nudum_PSND", 
           "Christensenia_aescuilfolira_CHAE", "Ptisana_pellucida_PTPE", "Danaea_nodosa_DANO")
 taxa_to_keep <- data.frame(taxa, row.names = taxa)
 name_list <- name.check(time_tree, taxa_to_keep)
@@ -271,37 +271,37 @@ names_to_drop <- as.vector(checked_names)
 trimmed_tree <- drop.tip(time_tree, names_to_drop)
 trimmed_tree <- ladderize(trimmed_tree, right = F)
 plot(trimmed_tree)
-write.tree(phy = trimmed_tree, file = "MARA_trimmed_tree_toedit.tre")
+write.tree(phy = trimmed_tree, file = "MARARev2_trimmed_tree_toedit.tre")
 #Edit tree manually to convert to SIMMAP format 
 
-OrthoFinder <- read.delim("MARA_run2_Orthogroups.GeneCount.tsv")
+OrthoFinder <- read.delim("MARA.Rev2.Orthogroups.GeneCount.tsv")
 
 #Select only taxa of interest 
 for_WGDgc <- dplyr::select(OrthoFinder,
-                           'Amborella.trichopoda', 'Angiopteris.fokiensis.ANFK',
-                           'Equisetum.arvense.EQAR', 'Psilotum.nudum.PSNU','Christensenia.aescuilfolira.CHAE',
+                           'Amborella.trichopoda', 'Angiopteris.fokiensis.ANFO',
+                           'Equisetum.arvense.EQAR', 'Psilotum.nudum.PSND','Christensenia.aescuilfolira.CHAE',
                            'Ptisana.pellucida.PTPE', 'Danaea.nodosa.DANO') %>% 
-  filter(Amborella.trichopoda < 100 & Angiopteris.fokiensis.ANFK < 100 & 
-           Equisetum.arvense.EQAR < 100 & Psilotum.nudum.PSNU < 100 &
+  filter(Amborella.trichopoda < 100 & Angiopteris.fokiensis.ANFO < 100 & 
+           Equisetum.arvense.EQAR < 100 & Psilotum.nudum.PSND < 100 &
            Ptisana.pellucida.PTPE < 100 & Christensenia.aescuilfolira.CHAE < 100 & Danaea.nodosa.DANO < 100)  %>% 
   filter(Amborella.trichopoda >= 1) %>% 
-  filter(Angiopteris.fokiensis.ANFK >=1 | Equisetum.arvense.EQAR >=1 |
-           Psilotum.nudum.PSNU >=1 | Ptisana.pellucida.PTPE >=1 | Christensenia.aescuilfolira.CHAE >=1 |
+  filter(Angiopteris.fokiensis.ANFO >=1 | Equisetum.arvense.EQAR >=1 |
+           Psilotum.nudum.PSND >=1 | Ptisana.pellucida.PTPE >=1 | Christensenia.aescuilfolira.CHAE >=1 |
            Danaea.nodosa.DANO >= 1)
 
 tmp <- for_WGDgc[rowSums(for_WGDgc[])>0,]
 
 df <- tmp %>% rowwise() %>% 
-  mutate(average=mean(c(Amborella.trichopoda, Angiopteris.fokiensis.ANFK,
-                        Equisetum.arvense.EQAR, Psilotum.nudum.PSNU, Ptisana.pellucida.PTPE, 
+  mutate(average=mean(c(Amborella.trichopoda, Angiopteris.fokiensis.ANFO,
+                        Equisetum.arvense.EQAR, Psilotum.nudum.PSND, Ptisana.pellucida.PTPE, 
                         Christensenia.aescuilfolira.CHAE, Danaea.nodosa.DANO))) 
 
 ggplot(data = df, mapping = aes(x = average)) + xlim(0, 3) + geom_density() + theme_classic()
 
-gm_mean(df$average) # 1.374465
+gm_mean(df$average) # 1.384547
 
 #Read in ultrametric species tree in Simmap format 
-tree <- phyext::read.simmap("MARA_trimmed_tree_edited.tre", vers = 1.1)
+tree <- phyext::read.simmap("MARARev2_trimmed_tree_edited.tre", vers = 1.1)
 plot(tree)
 #Generate subsets and estimate lambda and mu with WGDgc 
 birth = vector(mode = "list", length = 10)
@@ -315,9 +315,9 @@ for (i in 1:10) {
 }
 
 birth_df <- melt(as.data.frame(birth))
-mean(birth_df$value) # 0.001288237
+mean(birth_df$value) # 0.001303757
 death_df <- melt(as.data.frame(death))
-mean(death_df$value) # 0.001146853
+mean(death_df$value) # 0.001278366
 
 #### OSMU ####
 taxa <- c("Physcomitrella_patens", "Selaginella_moellendorffii", "Amborella_trichopoda", 
@@ -560,7 +560,7 @@ mean(birth_df$value) # 0.001192022
 death_df <- melt(as.data.frame(death))
 mean(death_df$value) # 0.0008802873
 #### SALV ####
-taxa <- c("Azolla_pinnata_AZPN", "Azolla_caroliniana_CVEG", "Salvinia_natans_SANA", "Marsilea_quadrifolia_MAQU", 
+taxa <- c("Azolla_pinnata_AZPI", "Azolla_caroliniana_CVEG", "Salvinia_natans_SANA", "Marsilea_quadrifolia_MAQU", 
           "Lygodium_flexuosum_LYFL", "Sticherus_truncatus_STTR", "Osmunda_japonica_OSJA")
 taxa_to_keep <- data.frame(taxa, row.names = taxa)
 name_list <- name.check(time_tree, taxa_to_keep)
@@ -572,31 +572,31 @@ plot(trimmed_tree)
 write.tree(phy = trimmed_tree, file = "SALV_trimmed_tree_toedit.tre")
 #Edit tree manually to convert to SIMMAP format 
 
-OrthoFinder <- read.delim("SALV_Orthogroups.GeneCount.tsv")
+OrthoFinder <- read.delim("SALV_Run2Orthogroups.GeneCount.tsv")
 
 #Select only taxa of interest 
 for_WGDgc <- dplyr::select(OrthoFinder,
-                           'Azolla.pinnata.AZPN', 'Azolla.caroliniana.CVEG',
+                           'Azolla.pinnata.AZPI', 'Azolla.caroliniana.CVEG',
                            'Salvinia.natans.SANA', 'Marsilea.quadrifolia.MAQU','Lygodium.flexuosum.LYFL',
                            'Sticherus.truncatus.STTR', 'Osmunda.japonica.OSJA') %>% 
-  filter(Azolla.pinnata.AZPN < 100 & Azolla.caroliniana.CVEG < 100 & 
+  filter(Azolla.pinnata.AZPI < 100 & Azolla.caroliniana.CVEG < 100 & 
            Salvinia.natans.SANA < 100 & Marsilea.quadrifolia.MAQU < 100 &
            Lygodium.flexuosum.LYFL < 100 & Sticherus.truncatus.STTR < 100 & Osmunda.japonica.OSJA < 100)  %>% 
   filter(Osmunda.japonica.OSJA >= 1) %>% 
-  filter(Azolla.pinnata.AZPN >=1 | Azolla.caroliniana.CVEG >=1 |
+  filter(Azolla.pinnata.AZPI >=1 | Azolla.caroliniana.CVEG >=1 |
            Salvinia.natans.SANA >=1 | Marsilea.quadrifolia.MAQU >=1 | Lygodium.flexuosum.LYFL >=1 |
            Sticherus.truncatus.STTR >= 1)
 
 tmp <- for_WGDgc[rowSums(for_WGDgc[])>0,]
 
 df <- tmp %>% rowwise() %>% 
-  mutate(average=mean(c(Azolla.pinnata.AZPN, Azolla.caroliniana.CVEG,
+  mutate(average=mean(c(Azolla.pinnata.AZPI, Azolla.caroliniana.CVEG,
                         Salvinia.natans.SANA, Marsilea.quadrifolia.MAQU, Lygodium.flexuosum.LYFL, 
                         Sticherus.truncatus.STTR, Osmunda.japonica.OSJA))) 
 
 ggplot(data = df, mapping = aes(x = average)) + xlim(0, 3) + geom_density() + theme_classic()
 
-gm_mean(df$average) # 1.253535
+gm_mean(df$average) # 1.256229
 
 #Read in ultrametric species tree in Simmap format 
 tree <- phyext::read.simmap("SALV_trimmed_tree_edited.tre", vers = 1.1)
@@ -606,16 +606,16 @@ birth = vector(mode = "list", length = 10)
 death = vector(mode = "list", length = 10)
 for (i in 1:10) {
   subset <- sample_n(tmp, 500)
-  MLE <- MLEGeneCount(tree, geneCountData = subset, geomMean = 1.253535,
+  MLE <- MLEGeneCount(tree, geneCountData = subset, geomMean = 1.256229,
                       conditioning = "oneInBothClades", fixedRetentionRates = T)
   birth[i] <- MLE$birthrate
   death[i] <- MLE$deathrate
 }
 
 birth_df <- melt(as.data.frame(birth))
-mean(birth_df$value) # 0.001486009
+mean(birth_df$value) # 0.001471915
 death_df <- melt(as.data.frame(death))
-mean(death_df$value) # 0.001307382
+mean(death_df$value) # 0.001258981
 #### CYATH1 ####
 taxa <- c("Azolla_pinnata_AZPN", "Alsophila_spinulosa_ALSI", "Dicksonia_antarctica_DIAN", "Thyrsopteris_elegans_EWXK", 
           "Lygodium_flexuosum_LYFL", "Sticherus_truncatus_STTR", "Osmunda_japonica_OSJA")
@@ -673,7 +673,7 @@ birth_df <- melt(as.data.frame(birth))
 mean(birth_df$value) # 0.001373651
 death_df <- melt(as.data.frame(death))
 mean(death_df$value) # 0.001130859
-#### CYATH 2 ####
+#### CYATH2 ####
 taxa <- c("Plagiogyria_stenoptera_PLST", "Alsophila_spinulosa_ALSI", "Thyrsopteris_elegans_EWXK", 
           "Lygodium_flexuosum_LYFL", "Sticherus_truncatus_STTR", "Osmunda_japonica_OSJA", "Culcita_macrocarpa_PNZO")
 taxa_to_keep <- data.frame(taxa, row.names = taxa)
@@ -731,7 +731,7 @@ mean(birth_df$value) # 0.001433139
 death_df <- melt(as.data.frame(death))
 mean(death_df$value) # 0.001520378
 
-####CYATH3 ####
+#### CYATH3 ####
 taxa <- c("Alsophila_spinulosa_ALSI", "Thyrsopteris_elegans_EWXK", 
           "Lygodium_flexuosum_LYFL", "Dicksonia_antarctica_DIAN", "Cibotium_barometz_CIBA", "Azolla_pinnata_AZPN")
 taxa_to_keep <- data.frame(taxa, row.names = taxa)
@@ -790,62 +790,68 @@ death_df <- melt(as.data.frame(death))
 mean(death_df$value) # 0.001412466
 
 #### LINDS ####
-taxa <- c("Lindsaea_microphylla_YIXP", "Odontosira_chinensis_ODCH", "Osmolindsaea_odorata_OSOD", 
-          "Lonchitis_hirsuta_VVRN", "Hypolepis_punctata_HYPU", "Alsophila_spinulosa_ALSI", "Azolla_pinnata_AZPN")
+supp_tree <- read.tree("supp_dated.tre")
+taxa <- c("Lindsaea_heterophylla_LIHE", "Odontosira_chinensis_ODCH", "Osmolindsaea_odorata_OSOR", 
+          "Lonchitis_hirsuta_VVRN", "Hypolepis_punctata_HYPU", "Alsophila_spinulosa_ALSI", "Azolla_pinnata_AZPI", 
+          "Cystodium_sorbifolium", "Saccoloma_campylurum")
 taxa_to_keep <- data.frame(taxa, row.names = taxa)
-name_list <- name.check(time_tree, taxa_to_keep)
+name_list <- name.check(supp_tree, taxa_to_keep)
 checked_names <- name_list$tree_not_data
 names_to_drop <- as.vector(checked_names)
-trimmed_tree <- drop.tip(time_tree, names_to_drop)
+trimmed_tree <- drop.tip(supp_tree, names_to_drop)
 trimmed_tree <- ladderize(trimmed_tree, right = F)
 plot(trimmed_tree)
-write.tree(phy = trimmed_tree, file = "LINDS_trimmed_tree_toedit.tre")
+write.tree(phy = trimmed_tree, file = "LINDS_run2_trimmed_tree_toedit.tre")
+
 #Edit tree manually to convert to SIMMAP format 
 
-OrthoFinder <- read.delim("LINDS_Orthogroups.GeneCount.tsv")
+OrthoFinder <- read.delim("LINDS_Run2Orthogroups.GeneCount.tsv")
 
 #Select only taxa of interest 
 for_WGDgc <- dplyr::select(OrthoFinder,
-                           'Lindsaea.microphylla.YIXP', 'Odontosira.chinensis.ODCH',
-                           'Osmolindsaea.odorata.OSOD', 'Lonchitis.hirsuta.VVRN','Hypolepis.punctata.HYPU',
-                           'Alsophila.spinulosa.ALSI', 'Azolla.pinnata.AZPN') %>% 
-  filter(Lindsaea.microphylla.YIXP < 100 & Odontosira.chinensis.ODCH < 100 & 
-           Osmolindsaea.odorata.OSOD < 100 & Lonchitis.hirsuta.VVRN < 100 &
-           Hypolepis.punctata.HYPU < 100 & Alsophila.spinulosa.ALSI < 100 & Azolla.pinnata.AZPN < 100)  %>% 
-  filter(Azolla.pinnata.AZPN >= 1) %>% 
-  filter(Lindsaea.microphylla.YIXP >=1 | Odontosira.chinensis.ODCH >=1 |
-           Osmolindsaea.odorata.OSOD >=1 | Lonchitis.hirsuta.VVRN >=1 | Hypolepis.punctata.HYPU >=1 |
-           Alsophila.spinulosa.ALSI >= 1)
+                           'Lindsaea.heterophylla.LIHE', 'Odontosira.chinensis.ODCH',
+                           'Osmolindsaea.odorata.OSOR', 'Lonchitis.hirsuta.VVRN',
+                           'Cystodium.sorbifolium', 'Saccoloma.campylurum', 'Hypolepis.punctata.HYPU',
+                           'Alsophila.spinulosa.ALSI', 'Azolla.pinnata.AZPI') %>% 
+  filter(Lindsaea.heterophylla.LIHE < 100 & Odontosira.chinensis.ODCH < 100 & 
+           Osmolindsaea.odorata.OSOR < 100 & Lonchitis.hirsuta.VVRN < 100 &
+           Cystodium.sorbifolium < 100 &  Saccoloma.campylurum < 100 &
+           Hypolepis.punctata.HYPU < 100 & Alsophila.spinulosa.ALSI < 100 & Azolla.pinnata.AZPI < 100)  %>% 
+  filter(Azolla.pinnata.AZPI >= 1) %>% 
+  filter(Lindsaea.heterophylla.LIHE >=1 | Odontosira.chinensis.ODCH >=1 |
+           Osmolindsaea.odorata.OSOR >=1 | Lonchitis.hirsuta.VVRN >=1 | Cystodium.sorbifolium >= 1 | 
+           Saccoloma.campylurum >= 1 | Hypolepis.punctata.HYPU >=1 | Alsophila.spinulosa.ALSI >= 1)
 
 tmp <- for_WGDgc[rowSums(for_WGDgc[])>0,]
 
 df <- tmp %>% rowwise() %>% 
-  mutate(average=mean(c(Lindsaea.microphylla.YIXP, Odontosira.chinensis.ODCH,
-                        Osmolindsaea.odorata.OSOD, Lonchitis.hirsuta.VVRN, Hypolepis.punctata.HYPU, 
-                        Alsophila.spinulosa.ALSI, Azolla.pinnata.AZPN))) 
+  mutate(average=mean(c(Lindsaea.heterophylla.LIHE, Odontosira.chinensis.ODCH,
+                        Cystodium.sorbifolium, Saccoloma.campylurum, 
+                        Osmolindsaea.odorata.OSOR, Lonchitis.hirsuta.VVRN, Hypolepis.punctata.HYPU, 
+                        Alsophila.spinulosa.ALSI, Azolla.pinnata.AZPI))) 
 
 ggplot(data = df, mapping = aes(x = average)) + xlim(0, 3) + geom_density() + theme_classic()
 
-gm_mean(df$average) # 1.215149
+gm_mean(df$average) # 1.191821
 
 #Read in ultrametric species tree in Simmap format 
-tree <- phyext::read.simmap("LINDS_trimmed_tree_edited.tre", vers = 1.1)
+tree <- phyext::read.simmap("LINDS_run2_trimmed_tree_edited.tre", vers = 1.1)
 plot(tree)
 #Generate subsets and estimate lambda and mu with WGDgc 
 birth = vector(mode = "list", length = 10)
 death = vector(mode = "list", length = 10)
 for (i in 1:10) {
   subset <- sample_n(tmp, 500)
-  MLE <- MLEGeneCount(tree, geneCountData = subset, geomMean = 1.215149,
+  MLE <- MLEGeneCount(tree, geneCountData = subset, geomMean = 1.191821,
                       conditioning = "oneInBothClades", fixedRetentionRates = T)
   birth[i] <- MLE$birthrate
   death[i] <- MLE$deathrate
 }
 
 birth_df <- melt(as.data.frame(birth))
-mean(birth_df$value) # 0.0021524
+mean(birth_df$value) # 0.002337705
 death_df <- melt(as.data.frame(death))
-mean(death_df$value) # 0.00200688
+mean(death_df$value) # 0.002455595
 
 #### PTER ####
 taxa <- c("Vittaria_appalachiana_NDUV", "Vittaria_lineata_SKYV", 
@@ -907,8 +913,8 @@ death_df <- melt(as.data.frame(death))
 mean(death_df$value) # 0.004321253
 
 #### LEPTO ####
-taxa <- c("Angiopteris_fokiensis_ANFK", "Equisetum_arvense_EQAR", 
-          "Lygodium_japonicum_LYJA", "Osmunda_sp_UOMY_gametophyte", "Psilotum_nudum_PSNU",
+taxa <- c("Angiopteris_fokiensis_ANFO", "Equisetum_arvense_EQAR", 
+          "Lygodium_japonicum_LYJA", "Osmunda_sp_UOMY_gametophyte", "Psilotum_nudum_PSND",
           "Salvinia_natans_SANA", "Trichomanes_badium_TRBA")
 taxa_to_keep <- data.frame(taxa, row.names = taxa)
 name_list <- name.check(time_tree, taxa_to_keep)
@@ -917,37 +923,37 @@ names_to_drop <- as.vector(checked_names)
 trimmed_tree <- drop.tip(time_tree, names_to_drop)
 trimmed_tree <- ladderize(trimmed_tree, right = F)
 plot(trimmed_tree)
-write.tree(phy = trimmed_tree, file = "LEPTO_trimmed_tree_toedit.tre")
+write.tree(phy = trimmed_tree, file = "LEPTO_rev2_trimmed_tree_toedit.tre")
 #Edit tree manually to convert to SIMMAP format 
 
-OrthoFinder <- read.delim("LEPTO_Orthogroups.GeneCount.tsv")
+OrthoFinder <- read.delim("Lepto_rev2_Orthogroups.GeneCount.tsv")
 
 #Select only taxa of interest 
 for_WGDgc <- dplyr::select(OrthoFinder,
-                           'Angiopteris.fokiensis.ANFK', 'Equisetum.arvense.EQAR',
-                           'Lygodium.japonicum.LYJA', 'Osmunda.sp.UOMY','Psilotum.nudum.PSNU',
+                           'Angiopteris.fokiensis.ANFO', 'Equisetum.arvense.EQAR',
+                           'Lygodium.japonicum.LYJA', 'Osmunda.sp.UOMY','Psilotum.nudum.PSND',
                            'Salvinia.natans.SANA', 'Trichomanes.badium.TRBA') %>% 
-  filter(Angiopteris.fokiensis.ANFK < 100 & Equisetum.arvense.EQAR < 100 &
+  filter(Angiopteris.fokiensis.ANFO < 100 & Equisetum.arvense.EQAR < 100 &
            Lygodium.japonicum.LYJA < 100 & Osmunda.sp.UOMY < 100 &
-           Psilotum.nudum.PSNU < 100 & Salvinia.natans.SANA < 100 & Trichomanes.badium.TRBA < 100)  %>% 
+           Psilotum.nudum.PSND < 100 & Salvinia.natans.SANA < 100 & Trichomanes.badium.TRBA < 100)  %>% 
   filter(Equisetum.arvense.EQAR >= 1) %>% 
-  filter(Angiopteris.fokiensis.ANFK >=1 |
-           Osmunda.sp.UOMY >=1 | Lygodium.japonicum.LYJA >=1 | Psilotum.nudum.PSNU >=1 |
+  filter(Angiopteris.fokiensis.ANFO >=1 |
+           Osmunda.sp.UOMY >=1 | Lygodium.japonicum.LYJA >=1 | Psilotum.nudum.PSND >=1 |
            Salvinia.natans.SANA >= 1 | Trichomanes.badium.TRBA >= 1)
 
 tmp <- for_WGDgc[rowSums(for_WGDgc[])>0,]
 
 df <- tmp %>% rowwise() %>% 
-  mutate(average=mean(c(Angiopteris.fokiensis.ANFK, Equisetum.arvense.EQAR, 
-                        Lygodium.japonicum.LYJA, Osmunda.sp.UOMY, Psilotum.nudum.PSNU, 
+  mutate(average=mean(c(Angiopteris.fokiensis.ANFO, Equisetum.arvense.EQAR, 
+                        Lygodium.japonicum.LYJA, Osmunda.sp.UOMY, Psilotum.nudum.PSND, 
                         Salvinia.natans.SANA, Trichomanes.badium.TRBA))) 
 
 ggplot(data = df, mapping = aes(x = average)) + xlim(0, 3) + geom_density() + theme_classic()
 
-gm_mean(df$average) # 1.232988
+gm_mean(df$average) # 1.255783
 
 #Read in ultrametric species tree in Simmap format 
-tree <- phyext::read.simmap("LEPTO_trimmed_tree_edited.tre", vers = 1.1)
+tree <- phyext::read.simmap("LEPTO_rev2_trimmed_tree_edited.tre", vers = 1.1)
 plot(tree)
 #Generate subsets and estimate lambda and mu with WGDgc 
 birth = vector(mode = "list", length = 10)
@@ -961,9 +967,9 @@ for (i in 1:10) {
 }
 
 birth_df <- melt(as.data.frame(birth))
-mean(birth_df$value) # 0.001036689
+mean(birth_df$value) # 0.001053809
 death_df <- melt(as.data.frame(death))
-mean(death_df$value) # 0.0007420914
+mean(death_df$value) # 0.0007459309
 
 #### POLY ####
 taxa <- c("Dryopteris_decipiens_DRDE", "Athyrium_filix_femina_URCP", 
