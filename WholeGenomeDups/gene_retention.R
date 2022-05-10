@@ -1,7 +1,7 @@
 ###########################
 ## gene_retention.R 
 ## Jessie Pelosi
-## Last modified February 1, 2022
+## Last modified May 10, 2022
 ###########################
 
 library(MASS)
@@ -255,10 +255,10 @@ residuals_event <- mutate(residuals_melt, average = mean(value)) %>%
   filter(event == "OPHIO.1" | event == "DIPT.2" | event == "PSIL.2" | event =="CYATH.2" |
          event == "CYATH.3" | event ==  "PTER.3" | event == "LINDS" | event == "EQUI" | 
          event == "GLEI" | event == "MARA" | event == "DIPT.1" | event == "OPHIO.2" |
-         event == "OSMU" | event == "PSIL.1" | event == "HYMN" | event ==  "CYATH.1" |
+        event == "PSIL.1" | event == "HYMN" | event ==  "CYATH.1" |
          event == "POLY" | event == "LEPTO" | event == "SALV")
 
-residuals_event$event <- factor(residuals_event$event,levels = c("OPHIO.1", "DIPT.2", "PSIL.2", "CYATH.2", "CYATH.3", "PTER.3", "LINDS", "EQUI", "GLEI", "MARA", "DIPT.1", "OPHIO.2", "OSMU", "PSIL.1", "HYMN", "CYATH.1", "POLY", "LEPTO", "SALV"))
+residuals_event$event <- factor(residuals_event$event,levels = c("OPHIO.1", "DIPT.2", "PSIL.2", "CYATH.2", "CYATH.3", "PTER.3", "LINDS", "EQUI", "GLEI", "MARA", "DIPT.1", "OPHIO.2", "PSIL.1", "HYMN", "CYATH.1", "POLY", "LEPTO", "SALV"))
 
 
 # Sort by average value 
