@@ -13,22 +13,22 @@ from [Guan et al. 2019](http://gigadb.org/dataset/100613). Outgroups used in thi
 |<i>Physcomitrium patens</i>      |Phypa V3    | Bryophytes           |
 |<i>Selaginella moellendorffii</i>| v1.0       | Lycophytes           |
 
-Primary transcripts for each outgroup were extracted using primary_transcripts.py (from David Emms, accessible [here](https://github.com/davidemms/OrthoFinder/blob/master/tools/primary_transcript.py)) and used in downstream analyses. 
+Primary transcripts for each outgroup were extracted using `primary_transcripts.py` (from David Emms, accessible [here](https://github.com/davidemms/OrthoFinder/blob/master/tools/primary_transcript.py)) and used in downstream analyses. 
 ```
 python primary_transcripts.py *.cds
 python primary_transcripts.py *.pep
 ```
 ## 2. Run OrthoFinder 
 
-Place all pep sequences into a single folder named "Proteomes". Run [OrthoFinder v.2.3.11](https://github.com/davidemms/OrthoFinder). 
+Place all pep sequences into a single folder named "proteomes". Run [OrthoFinder v.2.3.11](https://github.com/davidemms/OrthoFinder). 
 ```
 orthofinder -M msa -A mafft -T fasttree -t [threads] -a [threads] -f proteomes/
 ```
-Note that OrthoFinder continously failed due to the large number of transcriptomes being analyzed even with 1Tb of RAM. We instead ran Diamond Blasts independently after the commands were generated using: 
+Note that OrthoFinder failed due to the large number of transcriptomes being analyzed even with 1Tb of RAM. We instead ran Diamond Blasts independently after the commands were generated using: 
 ```
 orthofinder -f proteomes/ -op
 ```
-We then ran each Diamond Blast in parallel. Once the Blasts were completed, we ran:
+We then ran each Diamond Blast in parallel using several SLURM arrays. Once the Blasts were completed, we ran:
 ```
 orthofinder -a 30 -b proteomes/OrthoFinder/Results_XXX/WorkingDirectory/
 ```
@@ -126,7 +126,7 @@ for i in {2..6}; do iqtree -s OGXXX_NT.trim50.fa --alrt 1000 -B 1000 -T 2 --redo
 
 ## 7. Generate Species Tree 
 
-Prior to running ASTRAL, we must change names of the tips used in the phylogeny so that each transcriptome is only represented once, not per scaffold. 
+Prior to running ASTRAL, we must change names of the tips used in the phylogeny so that each transcriptome is represented by only its name, not name and scaffold/contig ID. 
 
 ```
 cat *.treefile > MC_loci.txt # Create a single file with every gene tree for the multi-copy dataset
