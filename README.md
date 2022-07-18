@@ -2,11 +2,11 @@
 
 Code and data for the paper:
 
-"Phylotranscriptomics illuminates the placement of whole genome duplications and gene retention in ferns " by Jessie A. Pelosi, Emily H. Kim, W. Brad Barbazuk, and Emily B. Sessa
+"Phylotranscriptomics illuminates the placement of whole genome duplications and gene retention in ferns " by Jessie A. Pelosi, Emily H. Kim, W. Brad Barbazuk, and Emily B. Sessa. The publication can be found [here](https://www.frontiersin.org/articles/10.3389/fpls.2022.882441/full). 
 
 Code Written By: Jessie Pelosi and Emily Kim 
 
-Last Updated: May 16, 2022
+Last Updated: July 18, 2022
 
 This repository is split into the following folders with corresponding markdowns: 
 <b>
